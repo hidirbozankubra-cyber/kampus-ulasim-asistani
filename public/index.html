@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#151015">
+  <title>Kampüs Ulaşım Asistanı</title>
+  <meta name="description" content="İzmir ESHOT seferlerini erişilebilir biçimde keşfet.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Ana içeriğe geç</a>
+<header class="topbar">
+  <div class="topbar-in">
+    <div>
+      <p class="back"><a href="https://kubrahidirbozan-ruby.vercel.app/">← Portfolyoma dön</a></p>
+      <p class="kicker">Erişilebilir toplu taşıma · Canlı veri ürünü</p>
+      <h1>Kampüs Ulaşım Asistanı</h1>
+      <p class="by">Kübra Hıdırbozan · BVA 2245 Kullanıcı Arayüzü Tasarımı</p>
+    </div>
+    <div class="top-actions"><span class="status-dot" id="statusDot" aria-hidden="true"></span><span id="dataStatus" role="status">Veri kontrol ediliyor…</span></div>
+  </div>
+</header>
+<div id="banner" class="banner" role="status" hidden></div>
+<main id="main" tabindex="-1">
+  <section class="intro">
+    <div><p class="eyebrow">Kampüs ulaşımı · ESHOT · GTFS</p><h2>Kampüse giden bir sonraki otobüs ne zaman?</h2><p>Durak seçin; sıradaki planlı seferleri görün, gün içindeki sefer yoğunluğunu inceleyin ve aynı veriyi harita ile erişilebilir liste üzerinden keşfedin.</p></div>
+    <div class="update-box"><span>Son güncelleme</span><strong id="lastUpdated">Veri bekleniyor</strong><a href="https://acikveri.bizizmir.com/tr/dataset/toplu-ulasim-gtfs-verileri" target="_blank" rel="noreferrer">Veri kaynağı ve lisans (yeni sekmede açılır) ↗</a></div>
+  </section>
+  <section class="kpis" aria-label="Veri özeti">
+    <article class="kpi"><span>Listelenen durak</span><strong id="kpiStops">—</strong><small>Seçili kampüs çevresinde</small></article>
+    <article class="kpi"><span>Hat sayısı</span><strong id="kpiRoutes">—</strong><small>Seçili duraktan geçen hatlar</small></article>
+    <article class="kpi"><span>Seçili duraktan sonraki sefer</span><strong id="kpiNext">—</strong><small>Planlı kalkış saati</small></article>
+  </section>
+  <section class="panel filters" aria-labelledby="filterTitle">
+    <div class="section-head"><div><p class="eyebrow">Siz keşfedin</p><h2 id="filterTitle">Hangi kampüs, hangi durak, hangi hat?</h2></div><button id="resetBtn" class="button secondary" type="button">Filtreleri sıfırla</button></div>
+    <div class="filter-grid">
+      <div class="field"><label for="campusSelect">Kampüs</label><select id="campusSelect"><option value="">Veri yükleniyor…</option></select></div>
+      <div class="field"><label for="stopSearch">Durak ara</label><input id="stopSearch" type="search" placeholder="Durak adı yazın…" autocomplete="off" aria-describedby="searchHint"><small id="searchHint" class="hint">Yazdıkça durak listesi daralır.</small></div>
+      <div class="field"><label for="stopSelect">Durak seç</label><select id="stopSelect"><option value="">Veri yükleniyor…</option></select></div>
+      <div class="field"><label for="routeSelect">Hat filtresi</label><select id="routeSelect"><option value="all">Tüm hatlar</option></select></div>
+      <div class="field"><label for="daySelect">Gün türü</label><select id="daySelect"><option value="today">Bugün</option><option value="weekday">Hafta içi</option><option value="saturday">Cumartesi</option><option value="sunday">Pazar</option></select></div>
+      <div class="field"><label for="timeInput">Saat (boş: şimdi)</label><input id="timeInput" type="time"></div>
+    </div>
+  </section>
+  <section class="panel departures" aria-labelledby="departuresTitle">
+    <div class="section-head"><div><p class="eyebrow">Bulgu 1</p><h2 id="departuresTitle">Seçtiğiniz duraktan sonraki 3 sefer</h2><p id="selectedStopText" class="muted">Bir durak seçin.</p></div><span class="pill">Planlı seferler</span></div>
+    <div id="nextDepartures" class="departure-list" aria-busy="true"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+    <p id="liveText" class="sr-only" role="status" aria-live="polite"></p>
+    <p class="note">Bu ekran GTFS tarifesindeki planlı saatleri gösterir; otobüsün canlı konumunu veya trafik kaynaklı gecikmeleri göstermez. Bilgilendirme amaçlıdır; kesin bilgi için ilgili kurumun resmî kaynaklarına bakın.</p>
+  </section>
+  <div class="analytics-grid">
+    <section class="panel" aria-labelledby="frequencyTitle">
+      <div class="section-head"><div><p class="eyebrow">Bulgu 2</p><h2 id="frequencyTitle">Seferler günün hangi saatlerinde yoğunlaşıyor?</h2></div></div>
+      <p id="frequencySummary" class="chart-summary">Grafik özeti veri yüklendiğinde burada görünür.</p>
+      <div class="chart-wrap"><canvas id="frequencyChart" role="img" aria-label="Seçili duraktaki planlı seferlerin saatlere göre dağılımı"></canvas></div>
+      <details><summary>Grafik verisini tablo olarak gör</summary><div class="table-scroll"><table id="chartDataTable"><caption>Saatlik sefer sayıları</caption><thead><tr><th scope="col">Saat</th><th scope="col">Sefer sayısı</th></tr></thead><tbody></tbody></table></div></details>
+    </section>
+    <section class="panel" aria-labelledby="routesTitle">
+      <div class="section-head"><div><p class="eyebrow">Bulgu 3</p><h2 id="routesTitle">Hangi hat bu durakta kaç sefer yapıyor?</h2></div></div>
+      <p id="routesSummary" class="chart-summary">Grafik özeti veri yüklendiğinde burada görünür.</p>
+      <div class="chart-wrap"><canvas id="routesChart" role="img" aria-label="Seçili duraktaki hatların günlük sefer sayıları"></canvas></div>
+      <details><summary>Grafik verisini tablo olarak gör</summary><div class="table-scroll"><table id="routesDataTable"><caption>Hat başına günlük sefer sayısı</caption><thead><tr><th scope="col">Hat</th><th scope="col">Sefer sayısı</th></tr></thead><tbody></tbody></table></div></details>
+    </section>
+  </div>
+  <section class="panel" aria-labelledby="stopsTitle">
+    <div class="section-head"><div><p class="eyebrow">Bulgu 4</p><h2 id="stopsTitle">Durakları haritada ve listede keşfedin</h2></div></div>
+    <p class="chart-summary">Noktaya tıklayarak veya Tab ile gezip Enter’a basarak durak seçebilirsiniz. Seçili durak daha büyük, halkalı ve etiketlidir. Aynı duraklar aşağıdaki listede de vardır.</p>
+    <div id="stopMap" role="region" aria-label="Durak haritası (aynı bilgiler aşağıdaki listede)" class="map"></div>
+    <div class="table-scroll stop-list-wrap"><table id="stopsTable"><caption>Seçili kampüsün durakları</caption><thead><tr><th scope="col">Durak</th><th scope="col">Uzaklık</th><th scope="col">Enlem</th><th scope="col">Boylam</th><th scope="col">İşlem</th></tr></thead><tbody></tbody></table></div>
+  </section>
+  <section class="panel" aria-labelledby="detailTitle">
+    <div class="section-head"><div><p class="eyebrow">Veriye yakından bakın</p><h2 id="detailTitle">Sefer detayları</h2><p class="muted">Sütun başlığındaki düğmelerle sıralayabilirsiniz.</p></div></div>
+    <div class="table-scroll"><table id="departuresTable"><caption>Seçili durağın seferleri</caption><thead><tr><th scope="col" aria-sort="ascending"><button type="button" class="sort-button" data-sort="time">Saat <span aria-hidden="true">↕</span></button></th><th scope="col"><button type="button" class="sort-button" data-sort="route">Hat <span aria-hidden="true">↕</span></button></th><th scope="col"><button type="button" class="sort-button" data-sort="headsign">Yön <span aria-hidden="true">↕</span></button></th><th scope="col">Durak</th></tr></thead><tbody></tbody></table></div>
+  </section>
+  <section id="messageBox" class="message" hidden role="status"></section>
+</main>
+<footer><p><strong>Kampüs Ulaşım Asistanı</strong> · Öğrenci projesi, resmî ESHOT uygulaması değildir.</p><p>Kaynak: <a href="https://acikveri.bizizmir.com/tr/dataset/toplu-ulasim-gtfs-verileri" target="_blank" rel="noreferrer">İzmir Büyükşehir Belediyesi Açık Veri Portalı</a> · İzmir Büyükşehir Belediyesi Açık Veri Lisansı · Harita: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> katkıda bulunanlar</p></footer>
+<script>
+/* Güvenlik ağı: ana betik başlamazsa nedenini ekranda söyle (sessiz takılmasın). */
+setTimeout(function () {
+  if (window.__appStarted) return;
+  var b = document.getElementById("messageBox");
+  if (!b) return;
+  b.className = "message err"; b.hidden = false;
+  b.textContent = location.protocol === "file:"
+    ? "Uygulama başlatılamadı: sayfayı çift tıklayarak (file://) açtınız. Tarayıcılar bu durumda modülleri ve veri dosyalarını engeller. Proje klasöründe \"npm run serve\" (veya \"python3 -m http.server 8080 -d public\") çalıştırıp http://localhost:8080 adresinden açın."
+    : "Uygulama başlatılamadı: app.js veya js/lib.js yüklenemedi. Dosya yapısını kontrol edin (public/app.js ve public/js/lib.js yan yana olmalı) ve tarayıcı konsolundaki (F12) hatayı bakın.";
+  var st = document.getElementById("dataStatus"); if (st) st.textContent = "Uygulama başlatılamadı";
+}, 2500);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+<script src="data/bundle.js" defer></script>
+<script src="js/lib.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>

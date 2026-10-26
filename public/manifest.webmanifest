@@ -1,0 +1,12 @@
+{
+  "name": "Kampüs Ulaşım Asistanı",
+  "short_name": "Kampüs Ulaşım",
+  "lang": "tr",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#151015",
+  "theme_color": "#151015",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

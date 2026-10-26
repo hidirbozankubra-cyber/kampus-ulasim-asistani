@@ -1,0 +1,8 @@
+{
+  "_not": "Koordinatlar yaklaşıktır; kendi kontrolünüzle düzeltin. radius_m: kampüs merkezine bu mesafedeki duraklar dahil edilir.",
+  "campuses": [
+    { "id": "ege", "name": "Ege Üniversitesi (Bornova)", "lat": 38.4558, "lon": 27.2290, "radius_m": 1200 },
+    { "id": "deu", "name": "Dokuz Eylül Üniversitesi (Tınaztepe)", "lat": 38.3705, "lon": 27.2022, "radius_m": 1200 },
+    { "id": "iyte", "name": "İzmir Yüksek Teknoloji Enstitüsü (Urla)", "lat": 38.3217, "lon": 26.6370, "radius_m": 1500 }
+  ]
+}
